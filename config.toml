@@ -1,0 +1,20 @@
+# Storage mode (files only)
+storage_mode = "files"
+
+# Path to the directory where notes will be stored.
+# The script parses only the $HOME variable. If a special path is needed, specify it fully.
+# path_to_main_valut = "$HOME/terminal_note"
+path_to_main_valut = "/mnt/c/Users/belousov/Documents/belousov_sync/my_note"
+
+# File extension for notes: txt, md (without the dot .md)
+# file_extension = "md"
+
+# Utility for reading non-md files: bat, cat, less
+file_reader = "cat"
+
+# Path to the template file.
+# path_to_template_note = "$HOME/terminal_note/Templates/template.md"
+path_to_template_note = "/mnt/c/Users/belousov/Documents/belousov_sync/my_note/Templates/template.md"
+
+# Editor to write notes comfortably: vi, vim, nvim, micro, nano, etc.
+editor = "vi"
