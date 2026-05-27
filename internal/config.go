@@ -8,16 +8,23 @@ import (
 )
 
 type TNConfig struct {
-	StorageMode         string `toml:"storage_mode"`
-	MainVault           string `toml:"path_to_main_vault"`
-	TemplateNote        string `toml:"path_to_template_note"`
-	Editor              string `toml:"editor"`
-	Path_to_inline_note string `toml:"path_to_inline_note"`
+	StorageMode      string `toml:"storage_mode"`
+	MainVault        string `toml:"path_to_main_vault"`
+	TemplateNote     string `toml:"path_to_template_note"`
+	Editor           string `toml:"editor"`
+	PathToInlineNote string `toml:"path_to_inline_note"`
 }
 
 type Note struct {
 	FileName string
 	FilePath string
+}
+
+type SearchLine struct {
+	FilePath string
+	Line     string
+	Col      string
+	Text     string
 }
 
 func Config(pathToVault string) TNConfig {
