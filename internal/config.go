@@ -9,7 +9,7 @@ import (
 
 type TNConfig struct {
 	StorageMode  string `toml:"storage_mode"`
-	MainValut    string `toml:"path_to_main_valut"`
+	MainVault    string `toml:"path_to_main_vault"`
 	TemplateNote string `toml:"path_to_template_note"`
 	Editor       string `toml:"editor"`
 }
@@ -21,7 +21,7 @@ type Note struct {
 
 func Config() TNConfig {
 	var config TNConfig
-	_, err := toml.DecodeFile("./config.toml", &config)
+	_, err := toml.DecodeFile("config.toml", &config)
 	if err != nil {
 		fmt.Println("Config not found from path $HOME/.config/tn/config.toml")
 		panic(err)
