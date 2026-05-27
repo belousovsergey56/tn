@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/ktr0731/go-fuzzyfinder"
 )
@@ -33,7 +34,7 @@ func ScanValute(root string) []Note {
 }
 
 func EditFile(filePath string) {
-	cmd := exec.Command(Config().Editor, filePath)
+	cmd := exec.Command(config.Editor, filePath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
@@ -44,7 +45,7 @@ func EditFile(filePath string) {
 }
 
 func GetFile() string {
-	noteList := ScanValute(Config().MainVault)
+	noteList := ScanValute(config.MainVault)
 	idx, err := fuzzyfinder.Find(
 		noteList,
 		func(i int) string {
@@ -70,4 +71,44 @@ func GetFile() string {
 		log.Fatal(err)
 	}
 	return noteList[idx].FilePath
+}
+
+func HandlerFile(fileName string) {
+	notes := ScanValute(config.MainVault)
+	for _, item := range notes {
+		if item.FileName == fileName {
+			EditFile(item.FilePath)
+			return
+		}
+	}
+	fullPath := filepath.Join(config.MainVault, fileName)
+	file, err := os.OpenFile(fullPath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+	if err != nil {
+		fmt.Printf("create error %v\n", err)
+		return
+	}
+	template, err := os.ReadFile(config.TemplateNote)
+	if err != nil {
+		file.Close()
+		EditFile(fullPath)
+		return
+	}
+	_, err = file.Write(template)
+	if err != nil {
+		fmt.Printf("write tmp in new file error %v", err)
+	}
+	file.Close()
+	EditFile(fullPath)
+}
+
+func InlineNote(inlineText string) error {
+	now := time.Now()
+	fileName := now.Format("2006-01-02 15_04_05.md")
+	filePath := filepath.Join(config.Path_to_inline_note, fileName)
+	err := os.WriteFile(filePath, []byte(inlineText), 0600)
+	if err != nil {
+		return fmt.Errorf("failed to write inline note: %w", err)
+	}
+	fmt.Printf("\033[32mNote saved successfully: %s\033[0m\n", fileName)
+	return nil
 }
