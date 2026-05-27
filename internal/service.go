@@ -33,7 +33,7 @@ func ScanValute(root string) []Note {
 }
 
 func EditFile(filePath string) {
-	cmd := exec.Command("hx", filePath)
+	cmd := exec.Command(Config().Editor, filePath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
@@ -44,7 +44,7 @@ func EditFile(filePath string) {
 }
 
 func GetFile() string {
-	noteList := ScanValute(Config().MainValut)
+	noteList := ScanValute(Config().MainVault)
 	idx, err := fuzzyfinder.Find(
 		noteList,
 		func(i int) string {
