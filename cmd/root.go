@@ -1,5 +1,6 @@
+// Package cmd contains implementation of console commands for performing actions with notes
 /*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
+Copyright © 2026 Sergey <belousovsergej56@gmail.com>
 */
 package cmd
 
@@ -26,6 +27,7 @@ var inlineCmd = &cobra.Command{
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		noteText := strings.Join(args, " ")
+		internal.ValidateVault()
 		internal.InlineNote(noteText)
 	},
 }
@@ -35,6 +37,7 @@ var openCmd = &cobra.Command{
 	Aliases: []string{"o"},
 	Short:   "Open and edit",
 	Run: func(cmd *cobra.Command, args []string) {
+		internal.ValidateVault()
 		file := internal.GetFile()
 		internal.EditFile(file)
 	},
@@ -46,6 +49,7 @@ var grepCmd = &cobra.Command{
 	Short:   "Interactive full-text search across notes",
 	Long:    "Launch an interactive fuzzy search (fzf) through the content of all your notes and open the selected file in your editor",
 	Run: func(cmd *cobra.Command, args []string) {
+		internal.ValidateVault()
 		internal.InteractiveSearchInternal()
 	},
 }
@@ -69,6 +73,7 @@ configuration, its content will be automatically pre-filled into the new note.`,
 			}
 			filename = filename + defaultExt
 		}
+		internal.ValidateVault()
 		internal.HandlerFile(filename)
 	},
 }
@@ -76,9 +81,9 @@ configuration, its content will be automatically pre-filled into the new note.`,
 var removeCmd = &cobra.Command{
 	Use:     "remove",
 	Aliases: []string{"r"},
-	Short:   "",
-	Long:    "",
+	Short:   "Search and deleted",
 	Run: func(cmd *cobra.Command, args []string) {
+		internal.ValidateVault()
 		file := internal.GetFile()
 		if file == "" {
 			fmt.Println("Operation canceled")
@@ -90,6 +95,20 @@ var removeCmd = &cobra.Command{
 			return
 		}
 		fmt.Printf("\033[32mFile %s deleted successfully\033[0m\n", filepath.Base(file))
+	},
+}
+
+var configCmd = &cobra.Command{
+	Use:     "config",
+	Aliases: []string{"c"},
+	Short:   "Open config file for edit",
+	Run: func(cmd *cobra.Command, args []string) {
+		configFile, err := internal.GetConfigPath()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		internal.EditFile(configFile)
 	},
 }
 
@@ -113,19 +132,20 @@ func isKnownCommand(arg string) bool {
 		"grep": true, "g": true,
 		"inline": true, "i": true,
 		"remove": true, "r": true,
+		"config": true, "c": true,
 		"help": true,
 	}
 	return known[arg]
 }
 
 func init() {
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.AddCommand(
 		inlineCmd,
 		openCmd,
 		grepCmd,
 		newCmd,
 		removeCmd,
+		configCmd,
 	)
 
 }
