@@ -39,7 +39,7 @@ func RemoveFile(filePath string) error {
 }
 
 func EditFile(filePath string) {
-	cmd := exec.Command(config.Editor, filePath)
+	cmd := exec.Command(GlobalConfig.Editor, filePath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
@@ -50,7 +50,7 @@ func EditFile(filePath string) {
 }
 
 func GetFile() string {
-	noteList := scanVault(config.MainVault)
+	noteList := scanVault(GlobalConfig.MainVault)
 	idx, err := fuzzyfinder.Find(
 		noteList,
 		func(i int) string {
@@ -79,20 +79,20 @@ func GetFile() string {
 }
 
 func HandlerFile(fileName string) {
-	notes := scanVault(config.MainVault)
+	notes := scanVault(GlobalConfig.MainVault)
 	for _, item := range notes {
 		if item.FileName == fileName {
 			EditFile(item.FilePath)
 			return
 		}
 	}
-	fullPath := filepath.Join(config.MainVault, fileName)
+	fullPath := filepath.Join(GlobalConfig.MainVault, fileName)
 	file, err := os.OpenFile(fullPath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
 	if err != nil {
 		fmt.Printf("create error %v\n", err)
 		return
 	}
-	template, err := os.ReadFile(config.TemplateNote)
+	template, err := os.ReadFile(GlobalConfig.TemplateNote)
 	if err != nil {
 		file.Close()
 		EditFile(fullPath)
@@ -109,7 +109,7 @@ func HandlerFile(fileName string) {
 func InlineNote(inlineText string) error {
 	now := time.Now()
 	fileName := now.Format("2006-01-02 15_04_05.md")
-	filePath := filepath.Join(config.PathToInlineNote, fileName)
+	filePath := filepath.Join(GlobalConfig.PathToInlineNote, fileName)
 	err := os.WriteFile(filePath, []byte(inlineText), 0600)
 	if err != nil {
 		return fmt.Errorf("failed to write inline note: %w", err)
@@ -121,7 +121,7 @@ func InlineNote(inlineText string) error {
 // InteractiveSearchInternal ищет по всему vault через rg/grep,
 // но фильтрует внутри встроенного go-fuzzyfinder (без внешнего fzf).
 func InteractiveSearchInternal() {
-	root := config.MainVault
+	root := GlobalConfig.MainVault
 	var cmd *exec.Cmd
 
 	if _, err := exec.LookPath("rg"); err == nil {
@@ -248,7 +248,7 @@ func InteractiveSearchInternal() {
 	}
 
 	// 5. Открываем редактор
-	editorCmd := exec.Command(config.Editor, target)
+	editorCmd := exec.Command(GlobalConfig.Editor, target)
 	editorCmd.Stdin = os.Stdin
 	editorCmd.Stdout = os.Stdout
 	editorCmd.Stderr = os.Stderr
