@@ -2,23 +2,19 @@
 storage_mode = "files"
 
 # Path to the directory where notes will be stored.
-# The script parses only the $HOME variable. If a special path is needed, specify it fully.
-# path_to_main_valut = "$HOME/terminal_note"
-# path_to_main_vault = "/mnt/c/Users/belousov/Documents/belousov_sync/my_note"
-# path_to_inline_note = "/mnt/c/Users/belousov/Documents/belousov_sync/my_note/cli_note"
+# Supports ~ or $HOME.
+path_to_main_vault = "$HOME/terminal-note"
 
-path_to_main_vault = "/home/belousov/mnt/sync/belousov_cloud/my_note"
-path_to_inline_note = "/home/belousov/mnt/sync/belousov_cloud/my_note/cli_note"
-# File extension for notes: txt, md (without the dot .md)
+# Path to the directory where imline notes will be stored. 
+# Supports ~ or $HOME.
+path_to_inline_note = "$HOME/terminal-note/cli_note"
+
+# File extension for notes: txt, md
 file_extension = ".md"
 
-# Utility for reading non-md files: bat, cat, less
-file_reader = "cat"
-
 # Path to the template file.
-# path_to_template_note = "$HOME/terminal_note/Templates/template.md"
-# path_to_template_note = "/mnt/c/Users/belousov/Documents/belousov_sync/my_note/Templates/Основная заметка.md"
-path_to_template_note = "/home/belousov/mnt/sync/belousov_cloud/my_note/Templates/Основная заметка.md"
+# Supports ~ or $HOME.
+path_to_template_note = "$HOME/terminal-note/Templates/base.md"
 
 # Editor to write notes comfortably: vi, vim, nvim, micro, nano, etc.
 editor = "hx"
