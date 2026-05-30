@@ -14,7 +14,7 @@ import (
 	"github.com/ktr0731/go-fuzzyfinder"
 )
 
-func ScanValute(root string) []Note {
+func scanVault(root string) []Note {
 	var notes []Note
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -34,6 +34,10 @@ func ScanValute(root string) []Note {
 	return notes
 }
 
+func RemoveFile(filePath string) error {
+	return os.Remove(filePath)
+}
+
 func EditFile(filePath string) {
 	cmd := exec.Command(config.Editor, filePath)
 	cmd.Stdout = os.Stdout
@@ -46,7 +50,7 @@ func EditFile(filePath string) {
 }
 
 func GetFile() string {
-	noteList := ScanValute(config.MainVault)
+	noteList := scanVault(config.MainVault)
 	idx, err := fuzzyfinder.Find(
 		noteList,
 		func(i int) string {
@@ -75,7 +79,7 @@ func GetFile() string {
 }
 
 func HandlerFile(fileName string) {
-	notes := ScanValute(config.MainVault)
+	notes := scanVault(config.MainVault)
 	for _, item := range notes {
 		if item.FileName == fileName {
 			EditFile(item.FilePath)
