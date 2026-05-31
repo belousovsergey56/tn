@@ -112,6 +112,17 @@ var configCmd = &cobra.Command{
 	},
 }
 
+var openObsidianCmd = &cobra.Command{
+	Use:     "view",
+	Aliases: []string{"v"},
+	Short:   "Search and open a note in your Obsidian vault",
+	Run: func(cmd *cobra.Command, args []string) {
+		internal.ValidateVault()
+		file := internal.GetFile()
+		internal.OpenURI(file)
+	},
+}
+
 func Execute() {
 	if len(os.Args) > 1 {
 		firstArgs := os.Args[1]
@@ -133,6 +144,7 @@ func isKnownCommand(arg string) bool {
 		"inline": true, "i": true,
 		"remove": true, "r": true,
 		"config": true, "c": true,
+		"view": true, "v": true,
 		"help": true,
 	}
 	return known[arg]
@@ -146,6 +158,7 @@ func init() {
 		newCmd,
 		removeCmd,
 		configCmd,
+		openObsidianCmd,
 	)
 
 }
