@@ -8,9 +8,9 @@ fmt:
 # 	go lint ./..
 # .PHONY:lint
 
-# vet: fmt
-# 	go vet ./..
-# .PHONY:vet
+vet: fmt
+	go vet ./..
+.PHONY:vet
 
 build: fmt
 	go build -o tn main.go
