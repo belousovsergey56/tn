@@ -10,24 +10,18 @@ import (
 	"strings"
 )
 
-func getRelativePathSafe(fullPath, vaultName string) string {
-	cleanPath := filepath.Clean(fullPath)
-	lookFor := string(filepath.Separator) + vaultName + string(filepath.Separator)
-	index := strings.Index(cleanPath, lookFor)
-
-	if index == -1 {
-		if strings.HasPrefix(cleanPath, vaultName+string(filepath.Separator)) {
-			return strings.TrimPrefix(cleanPath, vaultName+string(filepath.Separator))
-		}
-		if strings.HasSuffix(cleanPath, vaultName) {
-			return ""
-		}
-		return cleanPath
+func getRelativePathSafe(notePath, vaultPath string) (string, error) {
+	relative, err := filepath.Rel(vaultPath, notePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to get relative path %s", err)
 	}
 
-	relative := cleanPath[index+len(lookFor):]
+	if strings.HasPrefix(relative, "..") {
+		return "", fmt.Errorf("the file is outside vault")
+	}
+
 	relative = strings.TrimSuffix(relative, filepath.Ext(relative))
-	return filepath.ToSlash(relative)
+	return filepath.ToSlash(relative), nil
 }
 
 func isWsl() bool {
@@ -44,34 +38,37 @@ func strictEscape(s string) string {
 	return s
 }
 
-func OpenURI(vaultName, notePath string) error {
+func OpenURI(notePath string) error {
+	vaultPath := GlobalConfig.MainVault
+	if vaultPath == "" {
+		return fmt.Errorf("MainVault is not configured")
+	}
+	vaultName := filepath.Base(vaultPath)
+	relativePath, err := getRelativePathSafe(notePath, vaultPath)
+	if err != nil {
+		return err
+	}
+
 	escapedVault := strictEscape(vaultName)
-	var escapedFile string
-	var obsidianURI string
-	var cmd *exec.Cmd
+	escapedFile := strictEscape(relativePath)
+
+	obsidianURI := fmt.Sprintf("obsidian://open?vault=%s&file=%s", escapedVault, escapedFile)
 
 	if isWsl() {
-		relativePath := getRelativePathSafe(notePath, vaultName)
-		escapedFile = strictEscape(relativePath)
-		obsidianURI = fmt.Sprintf("obsidian://open?vault=%s&file=%s", escapedVault, escapedFile)
-		fmt.Println(escapedVault)
-		fmt.Println(escapedFile)
-		cmd = exec.Command("powershell.exe", "-NoProfile", "-Command", "Start-Process",
-			fmt.Sprintf("'%s'", obsidianURI))
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		return cmd.Run()
+		return openInWsl(obsidianURI)
 	}
-	escapedFile = url.QueryEscape(notePath)
-	obsidianURI = fmt.Sprintf("obsidian://open?vault=%s&file=%s", escapedVault, escapedFile)
+
 	switch runtime.GOOS {
 	case "linux":
-		cmd = exec.Command("xdg-open", obsidianURI)
+		return exec.Command("xdg-open", obsidianURI).Run()
 	case "darwin":
-		cmd = exec.Command("open", obsidianURI)
+		return exec.Command("open", obsidianURI).Run()
 	default:
-		return fmt.Errorf("unsupported platform")
+		return fmt.Errorf("unsupported platform %s", runtime.GOOS)
 	}
-	return cmd.Run()
+}
 
+func openInWsl(uri string) error {
+	return exec.Command("powershell.exe", "-NoProfile", "-Command", "Start-Process",
+		fmt.Sprintf("'%s'", uri)).Run()
 }
