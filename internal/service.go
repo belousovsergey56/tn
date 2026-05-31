@@ -38,15 +38,17 @@ func RemoveFile(filePath string) error {
 	return os.Remove(filePath)
 }
 
-func EditFile(filePath string) {
-	cmd := exec.Command(GlobalConfig.Editor, filePath)
+func EditFile(filePath string) error {
+	editor := GlobalConfig.Editor
+
+	cmd := exec.Command(editor, filePath)
+	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
-		fmt.Printf("command ended with error, %v\n", err)
-		return
-	}
+
+	cmd.Env = append(os.Environ(), "TERM=xterm-256color")
+
+	return cmd.Run()
 }
 
 func GetFile() string {
