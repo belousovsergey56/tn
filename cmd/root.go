@@ -5,10 +5,13 @@ Copyright © 2026 Sergey <belousovsergej56@gmail.com>
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -18,6 +21,77 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "tn",
 	Short: "A fast CLI note manager featuring search, Git, and Obsidian",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		if cmd.Name() == "config" || cmd.Name() == "sync" || cmd.Name() == "git-sync" || cmd.Name() == "help" {
+			return
+		}
+
+		vaultDir := internal.GlobalConfig.MainVault
+		if _, err := os.Stat(filepath.Join(vaultDir, ".git")); err != nil {
+			return
+		}
+
+		_ = exec.Command("git", "-C", vaultDir, "config", "local", "core.filemode", "false").Run()
+		_ = exec.Command("git", "-C", vaultDir, "config", "local", "core.autocrlf", "true").Run()
+
+		if !internal.HasRemote(vaultDir) {
+			return
+		}
+		if cmd.Name() == "sync" {
+			return
+		}
+
+		pullCmd := exec.Command("git", "-C", vaultDir, "pull", "--rebase")
+		if err := pullCmd.Run(); err != nil {
+			_ = exec.Command("git", "-C", vaultDir, "rebase", "--abort").Run()
+			fmt.Println("\x1b[33m[Git Warning] You have divergent branches and need to specify how to reconcile them. It is recommended to check the status manually.\x1b[0m")
+		}
+	},
+
+	PersistentPostRun: func(cmd *cobra.Command, args []string) {
+		mutatingCommands := map[string]bool{
+			"inline": true, "edit": true, "grep": true, "new": true, "delete": true,
+		}
+
+		if !mutatingCommands[cmd.Name()] {
+			return
+		}
+
+		vaultDir := internal.GlobalConfig.MainVault
+		if _, err := os.Stat(filepath.Join(vaultDir, ".git")); err != nil {
+			return
+		}
+
+		bgCmd := exec.Command(os.Args[0], "git-sync")
+		bgCmd.Stdout = nil
+		bgCmd.Stderr = nil
+		bgCmd.Stdin = nil
+
+		_ = bgCmd.Start()
+	},
+}
+
+var gitSyncCmd = &cobra.Command{
+	Use:    "git-sync",
+	Hidden: true,
+	Run: func(cmd *cobra.Command, args []string) {
+		vaultDir := internal.GlobalConfig.MainVault
+
+		_ = exec.Command("git", "-C", vaultDir, "add", ".").Run()
+
+		timestamp := time.Now().Format("2006-01-02 15:04:05")
+		commitMsg := fmt.Sprintf("tn: auto-sync %s", timestamp)
+
+		_ = exec.Command("git", "-C", vaultDir, "commit", "-m", commitMsg).Run()
+
+		if internal.HasRemote(vaultDir) {
+			ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+			defer cancel()
+
+			pushCmd := exec.CommandContext(ctx, "git", "-C", vaultDir, "push")
+			_ = pushCmd.Run()
+		}
+	},
 }
 
 var inlineCmd = &cobra.Command{
@@ -123,6 +197,18 @@ var openObsidianCmd = &cobra.Command{
 	},
 }
 
+var syncCmd = &cobra.Command{
+	Use:     "sync",
+	Aliases: []string{"s"},
+	Short:   "Manually synchronize your notes vault with the remote Git repository",
+	Run: func(cmd *cobra.Command, args []string) {
+		err := internal.SyncGit()
+		if err != nil {
+			return
+		}
+	},
+}
+
 func Execute() {
 	if len(os.Args) > 1 {
 		firstArgs := os.Args[1]
@@ -145,7 +231,9 @@ func isKnownCommand(arg string) bool {
 		"delete": true, "d": true,
 		"config": true, "c": true,
 		"edit": true, "e": true,
-		"help": true,
+		"sync": true, "s": true,
+		"git-sync": true,
+		"help":     true,
 	}
 	return known[arg]
 }
@@ -159,6 +247,8 @@ func init() {
 		deleteCmd,
 		configCmd,
 		openObsidianCmd,
+		syncCmd,
+		gitSyncCmd,
 	)
 
 }
