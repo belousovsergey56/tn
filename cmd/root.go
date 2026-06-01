@@ -23,7 +23,7 @@ var rootCmd = &cobra.Command{
 var inlineCmd = &cobra.Command{
 	Use:     "inline [text]",
 	Aliases: []string{"i"},
-	Short:   "Create a quick note from text without opening an editor",
+	Short:   "Create a quick timestamped note directly from arguments",
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		noteText := strings.Join(args, " ")
@@ -32,10 +32,10 @@ var inlineCmd = &cobra.Command{
 	},
 }
 
-var openCmd = &cobra.Command{
-	Use:     "open",
-	Aliases: []string{"o"},
-	Short:   "Open and edit",
+var editCmd = &cobra.Command{
+	Use:     "edit",
+	Aliases: []string{"e"},
+	Short:   "Interactive search and edit a note in the terminal",
 	Run: func(cmd *cobra.Command, args []string) {
 		internal.ValidateVault()
 		file := internal.GetFile()
@@ -58,8 +58,8 @@ var newCmd = &cobra.Command{
 	Use:     "new [filename]",
 	Aliases: []string{"n"},
 	Args:    cobra.ExactArgs(1),
-	Short:   "Create a new note or open an existing one",
-	Long: `Create a new note and open it for editing in your terminal editor. 
+	Short:   "Create a new note and open it in the terminal",
+	Long: `Create a new note and open it in the terminal. 
 
 If the file already exists, it will be opened directly. If it doesn't, 
 a new file will be created. If a template file is specified in your 
@@ -78,10 +78,10 @@ configuration, its content will be automatically pre-filled into the new note.`,
 	},
 }
 
-var removeCmd = &cobra.Command{
-	Use:     "remove",
-	Aliases: []string{"r"},
-	Short:   "Search and deleted",
+var deleteCmd = &cobra.Command{
+	Use:     "delete",
+	Aliases: []string{"d"},
+	Short:   "Interactive search and delete a note",
 	Run: func(cmd *cobra.Command, args []string) {
 		internal.ValidateVault()
 		file := internal.GetFile()
@@ -113,9 +113,9 @@ var configCmd = &cobra.Command{
 }
 
 var openObsidianCmd = &cobra.Command{
-	Use:     "view",
-	Aliases: []string{"v"},
-	Short:   "Search and open a note in your Obsidian vault",
+	Use:     "open",
+	Aliases: []string{"o"},
+	Short:   "Interactive search and open a note in Obsidian",
 	Run: func(cmd *cobra.Command, args []string) {
 		internal.ValidateVault()
 		file := internal.GetFile()
@@ -142,9 +142,9 @@ func isKnownCommand(arg string) bool {
 		"new": true, "n": true,
 		"grep": true, "g": true,
 		"inline": true, "i": true,
-		"remove": true, "r": true,
+		"delete": true, "d": true,
 		"config": true, "c": true,
-		"view": true, "v": true,
+		"edit": true, "e": true,
 		"help": true,
 	}
 	return known[arg]
@@ -153,10 +153,10 @@ func isKnownCommand(arg string) bool {
 func init() {
 	rootCmd.AddCommand(
 		inlineCmd,
-		openCmd,
+		editCmd,
 		grepCmd,
 		newCmd,
-		removeCmd,
+		deleteCmd,
 		configCmd,
 		openObsidianCmd,
 	)
