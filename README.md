@@ -34,7 +34,25 @@ Instead of a complex TUI (Terminal User Interface), I wanted a tool that leverag
 - Manual Git synchronization
 
 ## Installation
-*(Add your installation steps here)*
+Choose one of the following methods to install `tn`:
+
+### 1. Using `go install` (For Go developers)
+If you have Go installed on your system, you can build and install the binary directly from the source:
+```bash
+go install [github.com/belousovsergey56/tn@latest](https://github.com/belousovsergey56/tn@latest)
+```
+*Make sure your $GOPATH/bin (usually ~/go/bin) is added to your system's PATH.*
+
+### 2. Quick Install Script (Via curl)
+You can install the latest pre-compiled binary with a single command:
+```bash
+curl -sSfL [https://raw.githubusercontent.com/belousovsergey56/tn/main/install.sh](https://raw.githubusercontent.com//tn/main/install.sh) | sh
+```
+
+### 3. Manual Download (GitHub Releases)
+- Go to the Releases page.
+- Download the archive matching your operating system and CPU architecture (e.g., tn_Linux_x86_64.tar.gz).
+- Extract the archive and move the tn binary to a directory in your PATH (such as /usr/local/bin or ~/.local/bin).
 
 ## Usage
 - `tn help` / `tn -h` / `tn --help` - Help about any command
