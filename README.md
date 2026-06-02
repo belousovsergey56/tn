@@ -46,7 +46,7 @@ go install [github.com/belousovsergey56/tn@latest](https://github.com/belousovse
 ### 2. Quick Install Script (Via curl)
 You can install the latest pre-compiled binary with a single command:
 ```bash
-curl -sSfL [https://raw.githubusercontent.com/belousovsergey56/tn/main/install.sh](https://raw.githubusercontent.com//tn/main/install.sh) | sh
+curl -sSfL curl -sSfL https://raw.githubusercontent.com/belousovsergey56/tn/main/install.sh | sh
 ```
 
 ### 3. Manual Download (GitHub Releases)
