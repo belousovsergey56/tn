@@ -113,3 +113,7 @@ links:
 tags:
 ---
 ```
+
+## Ideas
+- [ ] Import/Export from and to databases
+- [ ] Implement database storage mode
