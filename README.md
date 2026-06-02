@@ -50,7 +50,7 @@ curl -sSfL [https://raw.githubusercontent.com/belousovsergey56/tn/main/install.s
 ```
 
 ### 3. Manual Download (GitHub Releases)
-- Go to the Releases page.
+- Go to the [Releases](https://github.com/belousovsergey56/tn/releases) page.
 - Download the archive matching your operating system and CPU architecture (e.g., tn_Linux_x86_64.tar.gz).
 - Extract the archive and move the tn binary to a directory in your PATH (such as /usr/local/bin or ~/.local/bin).
 
