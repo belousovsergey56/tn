@@ -50,9 +50,13 @@ func OpenURI(notePath string) error {
 	}
 
 	escapedVault := strictEscape(vaultName)
-	escapedFile := strictEscape(relativePath)
 
-	obsidianURI := fmt.Sprintf("obsidian://open?vault=%s&file=%s", escapedVault, escapedFile)
+	pathParts := strings.Split(relativePath, "/")
+	for i, part := range pathParts {
+		pathParts[i] = strictEscape(part)
+	}
+	escapedFile := strings.Join(pathParts, "/")
+	obsidianURI := fmt.Sprintf("obsidian://vault/%s/%s", escapedVault, escapedFile)
 
 	if isWsl() {
 		return openInWsl(obsidianURI)
@@ -63,6 +67,8 @@ func OpenURI(notePath string) error {
 		return exec.Command("xdg-open", obsidianURI).Run()
 	case "darwin":
 		return exec.Command("open", obsidianURI).Run()
+	case "windows":
+		return exec.Command("cmd", "/c", "start", "", obsidianURI).Run()
 	default:
 		return fmt.Errorf("unsupported platform %s", runtime.GOOS)
 	}
