@@ -39,7 +39,46 @@ func RemoveFile(filePath string) error {
 }
 
 func EditFile(filePath string) error {
-	editor := GlobalConfig.Editor
+	var editor string
+
+	if GlobalConfig.Editor != "" {
+		if _, err := exec.LookPath(GlobalConfig.Editor); err == nil {
+			editor = GlobalConfig.Editor
+		} else {
+			fmt.Printf("\x1b[33mWarning: Editor '%s' from config.toml not found. Trying system env...\x1b[0m\n", GlobalConfig.Editor)
+		}
+	}
+
+	if editor == "" && os.Getenv("VISUAL") != "" {
+		visualEnv := os.Getenv("VISUAL")
+		if _, err := exec.LookPath(visualEnv); err == nil {
+			editor = visualEnv
+		}
+	}
+
+	if editor == "" && os.Getenv("EDITOR") != "" {
+		editorEnv := os.Getenv("EDITOR")
+		if _, err := exec.LookPath(editorEnv); err == nil {
+			editor = editorEnv
+		}
+	}
+
+	if editor == "" {
+		fallbackEditors := []string{"nano", "hx", "nvim", "vim", "vi"}
+		for _, fallback := range fallbackEditors {
+			if _, err := exec.LookPath(fallback); err == nil {
+				editor = fallback
+				break
+			}
+		}
+	}
+
+	if editor == "" {
+		return fmt.Errorf(
+			"\x1b[31m❌ Critical Error: No text editor found in your system ($PATH).\x1b[0m\n" +
+				"Please install nano, helix, or vim, or set a correct path in config.toml.",
+		)
+	}
 
 	cmd := exec.Command(editor, filePath)
 	cmd.Stdin = os.Stdin
