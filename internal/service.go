@@ -64,7 +64,7 @@ func EditFile(filePath string) error {
 	}
 
 	if editor == "" {
-		fallbackEditors := []string{"nano", "hx", "nvim", "vim", "vi"}
+		fallbackEditors := []string{"nano", "notepad", "hx", "nvim", "vim", "vi"}
 		for _, fallback := range fallbackEditors {
 			if _, err := exec.LookPath(fallback); err == nil {
 				editor = fallback
