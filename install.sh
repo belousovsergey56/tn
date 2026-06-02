@@ -48,7 +48,7 @@ if [ "$EXT" = "zip" ]; then
   unzip -q -o "${BINARY}.${EXT}" "${BINARY}.exe"
   rm "${BINARY}.${EXT}"
 else
-  tar -xzf "${BINARY}.${EXT}" "${BINARY}"
+  tar -mxzf "${BINARY}.${EXT}" "${BINARY}"
   rm "${BINARY}.${EXT}"
 fi
 
