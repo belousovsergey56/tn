@@ -39,7 +39,7 @@ Choose one of the following methods to install `tn`:
 ### 1. Using `go install` (For Go developers)
 If you have Go installed on your system, you can build and install the binary directly from the source:
 ```bash
-go install [github.com/belousovsergey56/tn@latest](https://github.com/belousovsergey56/tn@latest)
+go install github.com/belousovsergey56/tn@latest
 ```
 *Make sure your $GOPATH/bin (usually ~/go/bin) is added to your system's PATH.*
 
