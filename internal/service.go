@@ -38,7 +38,7 @@ func RemoveFile(filePath string) error {
 	return os.Remove(filePath)
 }
 
-func EditFile(filePath string) error {
+func EditFile(filePath, line, col string) error {
 	var editor string
 
 	if GlobalConfig.Editor != "" {
@@ -75,12 +75,53 @@ func EditFile(filePath string) error {
 
 	if editor == "" {
 		return fmt.Errorf(
-			"\x1b[31m❌ Critical Error: No text editor found in your system ($PATH).\x1b[0m\n" +
+			"\x1b[31mCritical Error: No text editor found in your system ($PATH).\x1b[0m\n" +
 				"Please install nano, helix, or vim, or set a correct path in config.toml.",
 		)
 	}
 
-	cmd := exec.Command(editor, filePath)
+	var args []string
+	baseEditor := strings.ToLower(filepath.Base(editor))
+	baseEditor = strings.TrimSuffix(baseEditor, ".exe")
+	switch baseEditor {
+	case "vim", "nvim", "vi":
+		if line != "" {
+			if col != "" {
+				args = append(args, fmt.Sprintf("+call cursor(%s,%s)", line, col), filePath)
+			} else {
+				args = append(args, "+"+line, filePath)
+			}
+		} else {
+			args = append(args, filePath)
+		}
+
+	case "hx", "helix":
+		if col != "" {
+			args = append(args, fmt.Sprintf("%s:%s:%s", filePath, line, col))
+		} else if line != "" {
+			args = append(args, fmt.Sprintf("%s:%s", filePath, line))
+		} else {
+			args = append(args, filePath)
+		}
+
+	case "nano":
+		if line != "" {
+			if col != "" {
+				args = append(args, fmt.Sprintf("+%s,%s", line, col), filePath)
+			} else {
+				args = append(args, "+"+line, filePath)
+			}
+		} else {
+			args = append(args, filePath)
+		}
+
+	default:
+		args = append(args, filePath)
+	}
+
+	fmt.Print("\033[H\033[2J")
+
+	cmd := exec.Command(editor, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -123,7 +164,7 @@ func HandlerFile(fileName string) {
 	notes := scanVault(GlobalConfig.MainVault)
 	for _, item := range notes {
 		if item.FileName == fileName {
-			EditFile(item.FilePath)
+			EditFile(item.FilePath, "", "")
 			return
 		}
 	}
@@ -136,7 +177,7 @@ func HandlerFile(fileName string) {
 	template, err := os.ReadFile(GlobalConfig.TemplateNote)
 	if err != nil {
 		file.Close()
-		EditFile(fullPath)
+		EditFile(fullPath, "", "")
 		return
 	}
 	_, err = file.Write(template)
@@ -144,7 +185,7 @@ func HandlerFile(fileName string) {
 		fmt.Printf("write tmp in new file error %v", err)
 	}
 	file.Close()
-	EditFile(fullPath)
+	EditFile(fullPath, "", "")
 }
 
 func InlineNote(inlineText string) error {
@@ -159,8 +200,6 @@ func InlineNote(inlineText string) error {
 	return nil
 }
 
-// InteractiveSearchInternal ищет по всему vault через rg/grep,
-// но фильтрует внутри встроенного go-fuzzyfinder (без внешнего fzf).
 func InteractiveSearchInternal() {
 	root := GlobalConfig.MainVault
 	var cmd *exec.Cmd
@@ -174,34 +213,29 @@ func InteractiveSearchInternal() {
 		return
 	}
 
-	// 1. Получаем доступ к потоку вывода команды вместо выгрузки всего в Output()
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		fmt.Printf("Ошибка создания пайпа: %v\n", err)
 		return
 	}
 
-	// Стартуем команду в фоне
 	if err := cmd.Start(); err != nil {
 		fmt.Printf("Ошибка запуска поиска: %v\n", err)
 		return
 	}
 
-	// 2. Настраиваем сканер для построчного чтения
 	scanner := bufio.NewScanner(stdout)
 
-	// Задаем лимит на буфер строки (на случай, если в заметках есть гигантские строки-минифайлы)
-	const maxCapacity = 1024 * 1024 // 1 МБ на строку
+	const maxCapacity = 1024 * 1024
 	buf := make([]byte, 0, 64*1024)
 	scanner.Buffer(buf, maxCapacity)
 
 	var results []SearchLine
-	const maxLines = 30000 // ЛИМИТ СТРОК ДЛЯ ОЗУ
+	const maxLines = 30000
 
 	for scanner.Scan() {
-		// Если нагребли достаточно строк — жестко тормозим процесс поиска
 		if len(results) >= maxLines {
-			_ = cmd.Process.Kill() // Убиваем rg/grep, чтобы они не тратили CPU в фоне
+			_ = cmd.Process.Kill()
 			break
 		}
 
@@ -227,13 +261,10 @@ func InteractiveSearchInternal() {
 	}
 
 	if err := scanner.Err(); err != nil {
-		// Важно: если мы сами убили процесс через Kill(), сканер может ругнуться на "read |0: file already closed".
-		// Если мы вышли по лимиту строк, нам на эту ошибку плевать, данные-то мы уже собрали.
 		if len(results) < maxLines {
 			fmt.Printf("Ошибка при сканировании вывода: %v\n", err)
 		}
 	}
-	// Дожидаемся окончательной очистки ресурсов процесса
 	_ = cmd.Wait()
 
 	if len(results) == 0 {
@@ -241,12 +272,10 @@ func InteractiveSearchInternal() {
 		return
 	}
 
-	// 3. Запускаем go-fuzzyfinder
 	idx, err := fuzzyfinder.Find(
 		results,
 		func(i int) string {
 			relPath, _ := filepath.Rel(root, results[i].FilePath)
-			// Формируем красивую строку для поиска
 			if results[i].Col != "" {
 				return fmt.Sprintf("%s:%s:%s -> %s", relPath, results[i].Line, results[i].Col, results[i].Text)
 			}
@@ -256,7 +285,6 @@ func InteractiveSearchInternal() {
 			if i == -1 {
 				return ""
 			}
-			// Читаем файл для превью
 			contentBytes, err := os.ReadFile(results[i].FilePath)
 			if err != nil {
 				return fmt.Sprintf("Ошибка чтения файла: %v", err)
@@ -273,28 +301,14 @@ func InteractiveSearchInternal() {
 
 	if err != nil {
 		if err == fuzzyfinder.ErrAbort {
-			return // Пользователь нажал Esc
+			return
 		}
 		log.Printf("Ошибка выбора: %v", err)
 		return
 	}
 
-	// 4. Формируем таргет в формате file:line:col для Helix / Vim / Neovim
 	selected := results[idx]
-	var target string
-	if selected.Col != "" {
-		target = fmt.Sprintf("%s:%s:%s", selected.FilePath, selected.Line, selected.Col)
-	} else {
-		target = fmt.Sprintf("%s:%s", selected.FilePath, selected.Line)
-	}
-
-	// 5. Открываем редактор
-	editorCmd := exec.Command(GlobalConfig.Editor, target)
-	editorCmd.Stdin = os.Stdin
-	editorCmd.Stdout = os.Stdout
-	editorCmd.Stderr = os.Stderr
-
-	if err := editorCmd.Run(); err != nil {
+	if err := EditFile(selected.FilePath, selected.Line, selected.Col); err != nil {
 		fmt.Printf("Не удалось запустить редактор: %v\n", err)
 	}
 }
