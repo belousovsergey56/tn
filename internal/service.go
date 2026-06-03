@@ -145,7 +145,7 @@ func GetFile() string {
 			}
 			contentBytes, err := os.ReadFile(noteList[i].FilePath)
 			if err != nil {
-				return fmt.Sprintf("Ошибка чтения файла: %v", err)
+				return fmt.Sprintf("File Read Error: %v", err)
 			}
 			fileContent := string(contentBytes)
 			return fmt.Sprintf("=== %s ===\nПуть: %s\n\n%s",
@@ -209,18 +209,18 @@ func InteractiveSearchInternal() {
 	} else if _, err := exec.LookPath("grep"); err == nil {
 		cmd = exec.Command("grep", "-rn", ".", root)
 	} else {
-		fmt.Println("Ошибка: в системе не найдены ни 'rg', ни 'grep'.")
+		fmt.Println("Error: 'rg', 'grep' not found in the system.")
 		return
 	}
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		fmt.Printf("Ошибка создания пайпа: %v\n", err)
+		fmt.Printf("Pipe creation error: %v\n", err)
 		return
 	}
 
 	if err := cmd.Start(); err != nil {
-		fmt.Printf("Ошибка запуска поиска: %v\n", err)
+		fmt.Printf("Search launch error: %v\n", err)
 		return
 	}
 
@@ -262,13 +262,13 @@ func InteractiveSearchInternal() {
 
 	if err := scanner.Err(); err != nil {
 		if len(results) < maxLines {
-			fmt.Printf("Ошибка при сканировании вывода: %v\n", err)
+			fmt.Printf("Error scanning output: %v\n", err)
 		}
 	}
 	_ = cmd.Wait()
 
 	if len(results) == 0 {
-		fmt.Println("Ничего не найдено.")
+		fmt.Println("No results found.")
 		return
 	}
 
@@ -287,10 +287,10 @@ func InteractiveSearchInternal() {
 			}
 			contentBytes, err := os.ReadFile(results[i].FilePath)
 			if err != nil {
-				return fmt.Sprintf("Ошибка чтения файла: %v", err)
+				return fmt.Sprintf("File Read Error: %v", err)
 			}
 
-			return fmt.Sprintf("=== %s ===\nСтрока: %s, Колонка: %s\n\n%s",
+			return fmt.Sprintf("=== %s ===\nLine: %s, Column: %s\n\n%s",
 				filepath.Base(results[i].FilePath),
 				results[i].Line,
 				results[i].Col,
@@ -303,12 +303,12 @@ func InteractiveSearchInternal() {
 		if err == fuzzyfinder.ErrAbort {
 			return
 		}
-		log.Printf("Ошибка выбора: %v", err)
+		log.Printf("Selection error: %v", err)
 		return
 	}
 
 	selected := results[idx]
 	if err := EditFile(selected.FilePath, selected.Line, selected.Col); err != nil {
-		fmt.Printf("Не удалось запустить редактор: %v\n", err)
+		fmt.Printf("Failed to start editor: %v\n", err)
 	}
 }
