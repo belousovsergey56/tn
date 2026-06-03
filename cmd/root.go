@@ -15,7 +15,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"tn/internal"
+	"github.com/belousovsergey56/tn/internal"
 )
 
 var rootCmd = &cobra.Command{
@@ -113,7 +113,7 @@ var editCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		internal.ValidateVault()
 		file := internal.GetFile()
-		internal.EditFile(file)
+		internal.EditFile(file, "", "")
 	},
 }
 
@@ -182,7 +182,7 @@ var configCmd = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
-		internal.EditFile(configFile)
+		internal.EditFile(configFile, "", "")
 	},
 }
 

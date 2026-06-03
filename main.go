@@ -4,7 +4,7 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package main
 
 import (
-	"tn/cmd"
+	"github.com/belousovsergey56/tn/cmd"
 )
 
 func main() {

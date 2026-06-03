@@ -1,4 +1,4 @@
-module tn
+module github.com/belousovsergey56/tn
 
 go 1.26.3
 
