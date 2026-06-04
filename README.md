@@ -3,6 +3,11 @@
 Terminal note - A fast CLI note manager featuring search, Git, and Obsidian
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Go Report Card](https://goreportcard.com/badge/github.com/belousovsergey56/tn)](https://goreportcard.com/report/github.com/belousovsergey56/tn)
+
+<p align="center">
+  <video src="assets/hero-demo.mp4" controls autoplay loop muted width="750" style="max-width: 100%; border-radius: 8px;"></video>
+</p>
 
 ## Contents
 - [Motivation](#motivation)
@@ -46,7 +51,7 @@ go install github.com/belousovsergey56/tn@latest
 ### 2. Quick Install Script (Via curl)
 You can install the latest pre-compiled binary with a single command:
 ```bash
-curl -sSfL curl -sSfL https://raw.githubusercontent.com/belousovsergey56/tn/main/install.sh | sh
+curl -sSfL https://raw.githubusercontent.com/belousovsergey56/tn/main/install.sh | sh
 ```
 
 ### 3. Manual Download (GitHub Releases)
@@ -66,14 +71,61 @@ curl -sSfL curl -sSfL https://raw.githubusercontent.com/belousovsergey56/tn/main
 - `tn sync` or `tn s` - Manually synchronize your notes vault with the remote Git repository
 
 ## Demo
-- Config
-- Inline note
-- Edit note
-- Delete note
-- Full-text search
-- New note
-- Open note in Obsidian
-- Sync local and remote repository
+### Command Walkthrough
+<details>
+    <summary><b>tn help (Help about any command)</b></summary>
+    Learn more about any command and its available flags directly in your terminal:
+    <video src="assets/help.mp4" controls autoplay loop muted width="600"></video>
+</details>
+
+<details>
+    <summary><b>tn config / tn c (Open configuration file)</b></summary>
+    Quickly open and edit the utility's configuration file in your preferred text editor:
+    <video src="assets/config.mp4" controls autoplay loop muted width="600"></video>
+
+</details>
+
+<details>
+    <summary><b>tn new / tn n (Create a new note)</b></summary>
+    Create a new note (optionally using a template) and open it instantly in the terminal:
+    <video src="assets/newfile.mp4" controls autoplay loop muted width="600"></video>
+</details>
+
+<details>
+    <summary><b>tn inline / tn i (Save quick thoughts)</b></summary>
+    Save a quick thought on the fly directly from command arguments without entering the text editor:
+    <video src="assets/inline.mp4" controls autoplay loop muted width="600"></video>
+</details>
+
+<details>
+    <summary><b>tn edit / tn e (Search and edit a note)</b></summary>
+    Interactively find and open any existing note in your terminal-based editor:
+    <video src="assets/edit.mp4" controls autoplay loop muted width="600"></video>
+</details>
+
+<details>
+    <summary><b>tn grep / tn g (Full-text search)</b></summary>
+    Perform an interactive, fuzzy full-text search across all your notes simultaneously:
+    <video src="assets/grep.mp4" controls autoplay loop muted width="600"></video>
+</details>
+
+<details>
+    <summary><b>tn delete / tn d (Delete a note)</b></summary>
+    Interactively search for a note and safely remove it from your vault:
+    <video src="assets/delete.mp4" controls autoplay loop muted width="600"></video>
+</details>
+
+<details>
+    <summary><b>tn open / tn o (Open a note in Obsidian)</b></summary>
+    Find any note using fuzzy search and open it immediately within the Obsidian application:
+    <video src="assets/open.mp4" controls autoplay loop muted width="600"></video>
+</details>
+
+<details>
+    <summary><b>tn sync / tn s (Git synchronization)</b></summary>
+    Manually synchronize your local notes vault with your remote Git repository:
+    <video src="assets/sync.mp4" controls autoplay loop muted width="600"></video>
+</details>
 
 ## Dependencies
 - github.com/BurntSushi/toml v1.6.0
@@ -105,7 +157,7 @@ editor = "hx"
 ```
 
 ## Storage structure
-```bash
+```text
 ➜ ~/my-note
 .
 ├── cli_note
