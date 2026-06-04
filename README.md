@@ -75,56 +75,56 @@ curl -sSfL https://raw.githubusercontent.com/belousovsergey56/tn/main/install.sh
 <details>
     <summary><b>tn help (Help about any command)</b></summary>
     Learn more about any command and its available flags directly in your terminal:
-    <video src="https://github.com/user-attachments/assets/f8442d33-baee-424f-8105-9137f802c0aa" controls autoplay loop muted width="600"></video>
+    <video src="https://github.com/user-attachments/assets/f8442d33-baee-424f-8105-9137f802c0aa" controls autoplay loop muted playsinline width="600" style="max-width: 100%; border-radius: 8px;"></video>
 </details>
 
 <details>
     <summary><b>tn config / tn c (Open configuration file)</b></summary>
     Quickly open and edit the utility's configuration file in your preferred text editor:
-    <video src="https://github.com/user-attachments/assets/9b9837a7-a608-43f2-bd5b-903c466a196b" controls autoplay loop muted width="600"></video>
+    <video src="https://github.com/user-attachments/assets/9b9837a7-a608-43f2-bd5b-903c466a196b" controls autoplay loop muted playsinline width="600" style="max-width: 100%; border-radius: 8px;"></video>
 
 </details>
 
 <details>
     <summary><b>tn new / tn n (Create a new note)</b></summary>
     Create a new note (optionally using a template) and open it instantly in the terminal:
-    <video src="https://github.com/user-attachments/assets/67d70295-b867-4566-bf1d-aed503a9866b" controls autoplay loop muted width="600"></video>
+    <video src="https://github.com/user-attachments/assets/67d70295-b867-4566-bf1d-aed503a9866b" controls autoplay loop muted playsinline width="600" style="max-width: 100%; border-radius: 8px;"></video>
 </details>
 
 <details>
     <summary><b>tn inline / tn i (Save quick thoughts)</b></summary>
     Save a quick thought on the fly directly from command arguments without entering the text editor:
-    <video src="https://github.com/user-attachments/assets/e7297301-0c1a-4ed2-b490-a26261663c45" controls autoplay loop muted width="600"></video>
+    <video src="https://github.com/user-attachments/assets/e7297301-0c1a-4ed2-b490-a26261663c45" controls autoplay loop muted playsinline width="600" style="max-width: 100%; border-radius: 8px;"></video>
 </details>
 
 <details>
     <summary><b>tn edit / tn e (Search and edit a note)</b></summary>
     Interactively find and open any existing note in your terminal-based editor:
-    <video src="https://github.com/user-attachments/assets/9160dd91-c7be-4be8-ae65-e46737250ad0" controls autoplay loop muted width="600"></video>
+    <video src="https://github.com/user-attachments/assets/9160dd91-c7be-4be8-ae65-e46737250ad0" controls autoplay loop muted playsinline width="600" style="max-width: 100%; border-radius: 8px;"></video>
 </details>
 
 <details>
     <summary><b>tn grep / tn g (Full-text search)</b></summary>
     Perform an interactive, fuzzy full-text search across all your notes simultaneously:
-    <video src="https://github.com/user-attachments/assets/dfc47200-26de-457c-92a1-c28e7c9d2d7c" controls autoplay loop muted width="600"></video>
+    <video src="https://github.com/user-attachments/assets/dfc47200-26de-457c-92a1-c28e7c9d2d7c" controls autoplay loop muted playsinline width="600" style="max-width: 100%; border-radius: 8px;"></video>
 </details>
 
 <details>
     <summary><b>tn delete / tn d (Delete a note)</b></summary>
     Interactively search for a note and safely remove it from your vault:
-    <video src="https://github.com/user-attachments/assets/90d06e2e-6e23-4fa0-bd3c-1bf72c2bdc83" controls autoplay loop muted width="600"></video>
+    <video src="https://github.com/user-attachments/assets/90d06e2e-6e23-4fa0-bd3c-1bf72c2bdc83" controls autoplay loop muted playsinline width="600" style="max-width: 100%; border-radius: 8px;"></video>
 </details>
 
 <details>
     <summary><b>tn open / tn o (Open a note in Obsidian)</b></summary>
     Find any note using fuzzy search and open it immediately within the Obsidian application:
-    <video src="https://github.com/user-attachments/assets/99764c43-de2d-4df9-b95b-610241228afb" controls autoplay loop muted width="600"></video>
+    <video src="https://github.com/user-attachments/assets/99764c43-de2d-4df9-b95b-610241228afb" controls autoplay loop muted playsinline width="600" style="max-width: 100%; border-radius: 8px;"></video>
 </details>
 
 <details>
     <summary><b>tn sync / tn s (Git synchronization)</b></summary>
     Manually synchronize your local notes vault with your remote Git repository:
-    <video src="https://github.com/user-attachments/assets/8ec80773-2f25-43c2-ab85-6153389a5f3a" controls autoplay loop muted width="600"></video>
+    <video src="https://github.com/user-attachments/assets/8ec80773-2f25-43c2-ab85-6153389a5f3a" controls autoplay loop muted playsinline width="600" style="max-width: 100%; border-radius: 8px;"></video>
 </details>
 
 ## Dependencies
